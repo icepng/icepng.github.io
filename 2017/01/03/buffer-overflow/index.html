@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>buffer overflow - icepng&#39;s  blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="Stack &amp;#x5E38;&amp;#x89C1;&amp;#x7684;&amp;#x5B89;&amp;#x5168;&amp;#x673A;&amp;#x5236;&amp;#x4EE5;&amp;#x53CA;&amp;#x76F8;&amp;#x5173;&amp;#x7ED5;&amp;#x8FC7;&amp;#x65B9;&amp;#x6CD5;  security cookies &amp;#x7F16;&amp;#x8BD1;&amp;#x7684;&amp;#x65F6;&amp;#x5019;&amp;#x4F1A;&amp;#x5728">
+<meta property="og:type" content="article">
+<meta property="og:title" content="buffer overflow">
+<meta property="og:url" content="https://icepng.github.io/2017/01/03/buffer-overflow/index.html">
+<meta property="og:site_name" content="icepng&#39;s  blog">
+<meta property="og:description" content="Stack &amp;#x5E38;&amp;#x89C1;&amp;#x7684;&amp;#x5B89;&amp;#x5168;&amp;#x673A;&amp;#x5236;&amp;#x4EE5;&amp;#x53CA;&amp;#x76F8;&amp;#x5173;&amp;#x7ED5;&amp;#x8FC7;&amp;#x65B9;&amp;#x6CD5;  security cookies &amp;#x7F16;&amp;#x8BD1;&amp;#x7684;&amp;#x65F6;&amp;#x5019;&amp;#x4F1A;&amp;#x5728">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2017-01-03T03:02:34.000Z">
+<meta property="article:modified_time" content="2017-04-18T11:28:42.767Z">
+<meta property="article:author" content="icepng">
+<meta property="article:tag" content="vuls">
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <p> ICEPNG </p>
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/categories">Categories</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="Search" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="Table of Contents">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Stack">1&nbsp;&nbsp;<b>Stack</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#security-cookies">1.1&nbsp;&nbsp;security cookies</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#safeseh">1.2&nbsp;&nbsp;safeseh</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#DEP">1.3&nbsp;&nbsp;DEP</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#ROP链">1.3.1&nbsp;&nbsp;ROP链</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#ASLR">1.4&nbsp;&nbsp;ASLR</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Heap">2&nbsp;&nbsp;<b>Heap</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#safe-unlink">2.1&nbsp;&nbsp;safe unlink</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#ASLR-1">2.2&nbsp;&nbsp;ASLR</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#DEP-1">2.3&nbsp;&nbsp;DEP</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#参考">3&nbsp;&nbsp;<b>参考</b></a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/icepng" target="_blank" rel="noopener">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            buffer overflow
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2017-01-03T03:02:34.000Z" itemprop="datePublished">Jan 3 2017</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/vuls/">vuls</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            3 minutes read (About 442 words)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><h2 id="Stack"><a href="#Stack" class="headerlink" title="Stack"></a>Stack</h2><p>&#x5E38;&#x89C1;&#x7684;&#x5B89;&#x5168;&#x673A;&#x5236;&#x4EE5;&#x53CA;&#x76F8;&#x5173;&#x7ED5;&#x8FC7;&#x65B9;&#x6CD5;</p>
+<h3 id="security-cookies"><a href="#security-cookies" class="headerlink" title="security cookies"></a>security cookies</h3><p>&#x7F16;&#x8BD1;&#x7684;&#x65F6;&#x5019;&#x4F1A;&#x5728;&#x8FD0;&#x884C;&#x6808;RET&#x7684;&#x4E0A;&#x9762;&#x52A0;&#x4E0A;&#x4E00;&#x4E2A;&#x968F;&#x673A;&#x7684;4&#x5B57;&#x8282;&#x6570;&#x503C;(32&#x4F4D;&#x7CFB;&#x7EDF;), &#x8BE5;&#x503C;&#x6765;&#x81EA;&#x4E8E;(.data&#x8282;&#x7684;&#x524D;&#x56DB;&#x4E2A;&#x5B57;&#x8282;&#xFF0C;&#x5E76;&#x901A;&#x8FC7;&#x4E00;&#x5B9A;&#x7684;&#x7B97;&#x6CD5;&#x8BA1;&#x7B97;), &#x5728;&#x51FD;&#x6570;&#x8FD0;&#x884C;&#x6808;&#x524D;&#x9762;&#x4F1A;&#x5C06;&#x8BE5;&#x503C;&#x4E0E;esp&#x8FDB;&#x884C;&#x4EA6;&#x6216;&#x5E76;&#x653E;&#x7F6E;&#x5728;&#x6808;&#x4E2D;, &#x5728;&#x51FD;&#x6570;&#x8FD4;&#x56DE;&#x524D;&#x4F1A;&#x5BF9;&#x8BE5;&#x503C;&#x8FDB;&#x884C;&#x68C0;&#x67E5;. &#x5982;&#x679C;&#x8BE5;&#x503C;&#x88AB;&#x4FEE;&#x6539;&#x5C06;&#x76F4;&#x63A5;&#x5F02;&#x5E38;.<br>** &#x7A33;&#x5B9A;&#x5229;&#x7528;&#x4E3B;&#x8981;&#x601D;&#x60F3;&#x662F;&#x68C0;&#x67E5;&#x524D;&#x5229;&#x7528;(SEH, &#x865A;&#x8868;) **<br>Linux -fno-stack-protector</p>
+<h3 id="safeseh"><a href="#safeseh" class="headerlink" title="safeseh"></a>safeseh</h3><p>&#x5728;&#x5F02;&#x5E38;&#x5904;&#x7406;&#x5668;&#x88AB;&#x8C03;&#x7528;&#x65F6;, &#x4F1A;&#x5148;&#x68C0;&#x67E5;, &#x82E5;&#x4E0D;&#x6EE1;&#x8DB3;&#x6761;&#x4EF6;&#x5219;&#x4E0D;&#x4F1A;&#x6267;&#x884C;<br>&#x68C0;&#x6D4B;&#x65B9;&#x5F0F;(&#x548C;&#x64CD;&#x4F5C;&#x7CFB;&#x7EDF;&#x4EE5;&#x53CA;&#x7F16;&#x8BD1;&#x5668;&#x9009;&#x9879;&#x6709;&#x5173;):</p>
+<ol>
+<li>&#x5148;&#x83B7;&#x53D6;&#x6808;&#x7684;&#x9AD8;&#x5730;&#x5740;&#x548C;&#x4F4E;&#x5730;&#x5740;, &#x901A;&#x8FC7;&#x67E5;&#x8BE2;TEB&#x4E2D;&#x7684;FS:[4]&#x548C;FS:[8], &#x82E5;&#x6307;&#x9488;&#x6307;&#x5411;&#x8BE5;&#x8303;&#x56F4;&#x5219;&#x4E0D;&#x4F1A;&#x6267;&#x884C;.</li>
+<li>&#x68C0;&#x67E5;&#x662F;&#x5426;&#x5728;&#x52A0;&#x8F7D;&#x6A21;&#x5757;&#x5217;&#x8868;&#x7684;&#x67D0;&#x4E2A;&#x6A21;&#x5757;&#x7684;&#x5730;&#x5740;&#x8303;&#x56F4;&#x4E2D;, &#x7EE7;&#x7EED;&#x68C0;&#x6D4B; &#x662F;&#x5426;&#x6709;&#x201D;Load Configuration Directory&#x201D;.</li>
+<li>&#x5176;&#x4F59;&#x7684;&#x6709;, &#x5C06;SEH&#x94FE;&#x590D;&#x5236;&#x4E00;&#x904D;&#x5B58;&#x50A8;, &#x7136;&#x540E;&#x8FDB;&#x884C;&#x6BD4;&#x8F83;</li>
+</ol>
+<h3 id="DEP"><a href="#DEP" class="headerlink" title="DEP"></a>DEP</h3><p>&#x4F7F;&#x5F97;&#x6808;&#x533A;&#x88AB;&#x8986;&#x76D6;&#x7684;&#x4F4D;&#x7F6E;&#x6570;&#x636E;&#x4E0D;&#x5141;&#x8BB8;&#x6267;&#x884C;, CPU&#x7684;NX(&#x65E0;&#x6267;&#x884C;&#x9875;-AMD), XD(&#x4E0D;&#x80FD;&#x6267;&#x884C;-intel)<br>&#x786C;&#x4EF6;DEP, 64&#x4F4D;&#x7CFB;&#x7EDF;DEP&#x603B;&#x662F;&#x5F00;&#x542F;, &#x4E0D;&#x5141;&#x8BB8;&#x5173;&#x95ED;(?)</p>
+<h4 id="ROP&#x94FE;"><a href="#ROP&#x94FE;" class="headerlink" title="ROP&#x94FE;"></a>ROP&#x94FE;</h4><p>VirtualAlloc, VirtualProtect</p>
+<h3 id="ASLR"><a href="#ASLR" class="headerlink" title="ASLR"></a>ASLR</h3><p>Windows</p>
+<p>Linux&#x4F7F;&#x7528; echo &#x201C;0&#x201D; &gt; /proc/sys/kernel/randomize_va_space &#x5173;&#x95ED;ASLR<br>/proc/sys/kernel/randomize_va_space&#xFF1A;<br>0 &#x5173;&#x95ED;<br>1 &#x5F00;&#x542F;<br>2 &#x5728;1&#x7684;&#x57FA;&#x7840;&#x4E0A;&#x589E;&#x52A0;&#x4E86;heap&#x968F;&#x673A;&#x5316;</p>
+<h2 id="Heap"><a href="#Heap" class="headerlink" title="Heap"></a>Heap</h2><p>&#x5E38;&#x89C1;&#x7684;&#x5B89;&#x5168;&#x673A;&#x5236;</p>
+<h3 id="safe-unlink"><a href="#safe-unlink" class="headerlink" title="safe unlink"></a>safe unlink</h3><p>freelists&#x7684;&#x4FDD;&#x62A4;<br>** &#x7A33;&#x5B9A;&#x5229;&#x7528;&#x53EF;&#x4EE5;&#x501F;&#x52A9;&#x5FEB;&#x8868;(lookaside lists) **<br>lookaside&#x653B;&#x51FB;&#x5BFC;&#x81F4;&#x4EFB;&#x610F;&#x56DB;&#x5B57;&#x8282;&#x5199;, &#x53EF;&#x4EE5;&#x8986;&#x76D6;SEH, &#x7136;&#x540E;&#x6267;&#x884C;&#x4E00;&#x4E2A;&#x9664;0&#x5F02;&#x5E38;&#x5BFC;&#x81F4;&#x5229;&#x7528;</p>
+<h3 id="ASLR-1"><a href="#ASLR-1" class="headerlink" title="ASLR"></a>ASLR</h3><p>** heap spray **</p>
+<h3 id="DEP-1"><a href="#DEP-1" class="headerlink" title="DEP"></a>DEP</h3><p>Linux  NX&#xFF1A;&#x4E0D;&#x53EF;&#x6267;&#x884C;&#x5185;&#x5B58;<br>** rop **</p>
+<h2 id="&#x53C2;&#x8003;"><a href="#&#x53C2;&#x8003;" class="headerlink" title="&#x53C2;&#x8003;"></a>&#x53C2;&#x8003;</h2><p><a href="http://blog.sina.com.cn/s/blog_702eef6501011v07.html" target="_blank" rel="noopener">http://blog.sina.com.cn/s/blog_702eef6501011v07.html</a></p>
+</body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/vuls/">#vuls</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/2017/01/04/butags/">BuTags - a chrome plugin</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/2017/01/02/memory-alignment/">内存对齐</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2020 icepng&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/" target="_blank" rel="noopener">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("en-AU");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

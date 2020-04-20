@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>Usage of Windbg - icepng&#39;s  blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="windbg &amp;#x57FA;&amp;#x672C;&amp;#x547D;&amp;#x4EE4;&amp;#x6536;&amp;#x96C6; CommandUsageExamplelm&amp;#x663E;&amp;#x793A;&amp;#x52A0;&amp;#x8F7D;&amp;#x7684;modulelm vln&amp;#x67E5;&amp;#x770B;&amp;#x9644;&amp;#x8FD1;&amp;#x7684;&amp;#x7B26;&amp;#x53F7;&amp;#x6587;&amp;#x4EF6">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Usage of Windbg">
+<meta property="og:url" content="https://icepng.github.io/2016/12/11/Command-of-Windbg/index.html">
+<meta property="og:site_name" content="icepng&#39;s  blog">
+<meta property="og:description" content="windbg &amp;#x57FA;&amp;#x672C;&amp;#x547D;&amp;#x4EE4;&amp;#x6536;&amp;#x96C6; CommandUsageExamplelm&amp;#x663E;&amp;#x793A;&amp;#x52A0;&amp;#x8F7D;&amp;#x7684;modulelm vln&amp;#x67E5;&amp;#x770B;&amp;#x9644;&amp;#x8FD1;&amp;#x7684;&amp;#x7B26;&amp;#x53F7;&amp;#x6587;&amp;#x4EF6">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2016-12-11T08:10:56.000Z">
+<meta property="article:modified_time" content="2018-03-31T07:43:38.243Z">
+<meta property="article:author" content="icepng">
+<meta property="article:tag" content="windbg">
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <p> ICEPNG </p>
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/categories">Categories</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="Search" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="Table of Contents">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#windbg-基本命令收集">1&nbsp;&nbsp;<b>windbg 基本命令收集</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#几个使用的命令与设置">2&nbsp;&nbsp;<b>几个使用的命令与设置</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#x">3&nbsp;&nbsp;<b>x</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#b">4&nbsp;&nbsp;<b>b</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#pageheap">5&nbsp;&nbsp;<b>pageheap</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#ust-user-stack-trace">6&nbsp;&nbsp;<b>ust(user stack trace)</b></a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/icepng" target="_blank" rel="noopener">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Usage of Windbg
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2016-12-11T08:10:56.000Z" itemprop="datePublished">Dec 11 2016</time>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            4 minutes read (About 527 words)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><h2 id="windbg-&#x57FA;&#x672C;&#x547D;&#x4EE4;&#x6536;&#x96C6;"><a href="#windbg-&#x57FA;&#x672C;&#x547D;&#x4EE4;&#x6536;&#x96C6;" class="headerlink" title="windbg &#x57FA;&#x672C;&#x547D;&#x4EE4;&#x6536;&#x96C6;"></a>windbg &#x57FA;&#x672C;&#x547D;&#x4EE4;&#x6536;&#x96C6;</h2><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Usage</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>lm</td>
+<td>&#x663E;&#x793A;&#x52A0;&#x8F7D;&#x7684;module</td>
+<td>lm v</td>
+</tr>
+<tr>
+<td>ln</td>
+<td>&#x67E5;&#x770B;&#x9644;&#x8FD1;&#x7684;&#x7B26;&#x53F7;&#x6587;&#x4EF6;</td>
+<td>ln eax</td>
+</tr>
+<tr>
+<td>dps</td>
+<td>&#x67E5;&#x770B;&#x7B26;&#x53F7;</td>
+<td>dps eax</td>
+</tr>
+<tr>
+<td>gu</td>
+<td>&#x6267;&#x884C;&#x5230;&#x5F53;&#x524D;&#x51FD;&#x6570;&#x7ED3;&#x675F;&#x65F6;&#x505C;&#x4E0B;</td>
+<td>gu</td>
+</tr>
+<tr>
+<td>p</td>
+<td>&#x5355;&#x6B65;&#x6B65;&#x8FC7;</td>
+<td>p p2</td>
+</tr>
+<tr>
+<td>t</td>
+<td>&#x5355;&#x6B65;&#x6B65;&#x5165;</td>
+<td>t t2</td>
+</tr>
+<tr>
+<td><a href="#b">b</a></td>
+<td>&#x8BBE;&#x7F6E;&#x65AD;&#x70B9;</td>
+<td>ba bp</td>
+</tr>
+</tbody></table>
+<h2 id="&#x51E0;&#x4E2A;&#x4F7F;&#x7528;&#x7684;&#x547D;&#x4EE4;&#x4E0E;&#x8BBE;&#x7F6E;"><a href="#&#x51E0;&#x4E2A;&#x4F7F;&#x7528;&#x7684;&#x547D;&#x4EE4;&#x4E0E;&#x8BBE;&#x7F6E;" class="headerlink" title="&#x51E0;&#x4E2A;&#x4F7F;&#x7528;&#x7684;&#x547D;&#x4EE4;&#x4E0E;&#x8BBE;&#x7F6E;"></a>&#x51E0;&#x4E2A;&#x4F7F;&#x7528;&#x7684;&#x547D;&#x4EE4;&#x4E0E;&#x8BBE;&#x7F6E;</h2><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Usage</th>
+<th>Command</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="#pageheap">pageheap</a></td>
+<td>XXXX</td>
+<td>XXX</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="#x">x</a></td>
+<td>X</td>
+<td>X</td>
+<td></td>
+</tr>
+<tr>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="x"><a href="#x" class="headerlink" title="x"></a>x</h2><p>windbg&#x7684;x&#x547D;&#x4EE4;&#x7528;&#x6237;&#x663E;&#x793A;&#x6240;&#x6709;&#x4E0A;&#x4E0B;&#x6587;&#x4E2D;&#x5339;&#x914D;&#x6307;&#x5B9A;&#x6A21;&#x677F;&#x7684;&#x7B26;&#x53F7;, &#x7528;&#x6237;&#x5BFB;&#x627E;&#x76F8;&#x5E94;&#x7684;&#x65AD;&#x70B9;&#x4F4D;&#x7F6E;<br>&#x5373;x &#x540E;&#x9762;&#x8DDF;&#x7740;&#x4E00;&#x4E2A;&#x6B63;&#x5219;&#x8868;&#x8FBE;&#x5F0F;, &#x7136;&#x540E;&#x663E;&#x793A;&#x6240;&#x6709;&#x5339;&#x914D;&#x7684;&#x7B26;&#x53F7;,<br></p><figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">0:011&gt; x mshtml!Alternate*</span><br><span class="line">69bd6e80 mshtml!AlternateFontNameIfAvailable = &lt;no <span class="hljs-built_in">type</span> information&gt;</span><br><span class="line">697cfd9d mshtml!AlternateFontName = &lt;no <span class="hljs-built_in">type</span> information&gt;</span><br></pre></td></tr></tbody></table></figure><br><code>*</code>&#x4EE3;&#x8868;&#x96F6;&#x4E2A;&#x6216;&#x591A;&#x4E2A;&#x5B57;&#x7B26;<br><code>?</code>&#x4EE3;&#x8868;&#x4E00;&#x4E2A;&#x5B57;&#x7B26;<br><code>+d</code>&#x4EE3;&#x8868;&#x4E00;&#x4E2A;&#x6216;&#x591A;&#x4E2A;&#x5B57;&#x7B26;<p></p>
+<p>x&#x8FD8;&#x6709;&#x4E2A;&#x4F5C;&#x7528;, &#x5728;&#x51FD;&#x6570;&#x65AD;&#x4E0B;&#x6765;&#x540E;&#x8F93;&#x5165;x, &#x4F1A;&#x81EA;&#x52A8;&#x6253;&#x5370;&#x51FA;&#x5F53;&#x524D;&#x7684;&#x5C40;&#x90E8;&#x53D8;&#x91CF;</p>
+<h2 id="b"><a href="#b" class="headerlink" title="b"></a>b</h2><p><code>ba</code> &#x8BBE;&#x7F6E;&#x5185;&#x5B58;&#x65AD;&#x70B9;<br><code>ba Access Size</code><br>Access &#x5305;&#x62EC; e (&#x6267;&#x884C;)&#xFF0C; r (&#x8BFB;/&#x5199;)&#xFF0C; w(&#x5199;)<br></p><figure class="highlight cmd hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ba r4 <span class="hljs-number">0</span>x0033c558</span><br></pre></td></tr></tbody></table></figure><p></p>
+<h2 id="pageheap"><a href="#pageheap" class="headerlink" title="pageheap"></a>pageheap</h2><p><strong>&#x6B63;&#x5E38;&#x9875;&#x5806;</strong> , &#x5B83;&#x5728;&#x5DF2;&#x5206;&#x914D;&#x7684;&#x5185;&#x5B58;&#x7684;&#x540E;&#x9762;&#x653E;&#x4E0A;&#x51E0;&#x4E2A;&#x5B88;&#x62A4;&#x5B57;&#x8282;(Guard Bytes), &#x7C7B;&#x4F3C;&#x4E8E;security cookie&#xFF0C;&#x518D;&#x8DDF;&#x4E0A;&#x4E00;&#x4E2A;&#x6807;&#x8BB0;&#x4E3A;PAGE_NOACCESS&#x7684;&#x5185;&#x5B58;&#x9875;&#x3002;&#x8FD9;&#x6837;&#xFF0C;&#x5DF2;&#x5206;&#x914D;&#x5185;&#x5B58;&#x7684;&#x540E;&#x9762;&#x5982;&#x679C;&#x88AB;&#x91CD;&#x5199;&#x4E86;&#xFF0C;&#x90A3;&#x4E48;&#x5B88;&#x62A4;&#x5B57;&#x8282;&#x5C31;&#x4F1A;&#x88AB;&#x6539;&#x53D8;&#xFF0C;&#x4E8E;&#x662F;&#x5F53; <strong>&#x5185;&#x5B58;&#x88AB;&#x91CA;&#x653E;</strong> &#x65F6;&#xFF0C;PageHeap&#x5C31;&#x4F1A;&#x5F15;&#x53D1;&#x4E00;&#x4E2A;AV&#x3002;<br><strong>&#x5B8C;&#x5168;&#x9875;&#x5806;</strong> , &#x5F53;&#x5206;&#x914D;&#x4E00;&#x5757;&#x5185;&#x5B58;&#x65F6;&#xFF0C;&#x901A;&#x8FC7;&#x8C03;&#x6574;&#x5185;&#x5B58;&#x5757;&#x7684;&#x5206;&#x914D;&#x4F4D;&#x7F6E;&#xFF0C;&#x4F7F;&#x5176;&#x7ED3;&#x5C3E;&#x6070;&#x597D;&#x4E0E;&#x7CFB;&#x7EDF;&#x5206;&#x9875;&#x8FB9;&#x754C;&#x5BF9;&#x9F50;&#xFF0C;&#x7136;&#x540E;&#x5728;&#x8FB9;&#x754C;&#x5904;&#x518D;&#x591A;&#x5206;&#x914D;&#x4E00;&#x4E2A; <strong>&#x4E0D;&#x53EF;&#x8BBF;&#x95EE;&#x7684;&#x9875;</strong>&#x4F5C;&#x4E3A;&#x4FDD;&#x62A4;&#x533A;&#x57DF;&#x3002;<br>&#x56E0;&#x6B64;&#x4E00;&#x822C;UAF&#x7684;&#x6D1E;&#x5F00;&#x542F;&#x9875;&#x5806;&#x4E4B;&#x540E;&#x5F88;&#x5927;&#x53EF;&#x80FD;&#x4E0A;&#x53EF;&#x4EE5;&#x5B9A;&#x4F4D;&#x5230;&#x91CA;&#x653E;&#x7684;&#x4F4D;&#x7F6E;, &#x800C;&#x4E0D;&#x662F;&#x91CD;&#x65B0;&#x4F7F;&#x7528;&#x89E6;&#x53D1;&#x7684;AV.</p>
+<p>&#x7528;gflag.exe&#x5F00;&#x542F;&#x548C;&#x5173;&#x95ED;&#xFF0C;&#x52A0;/full&#x8868;&#x793A;&#x5F00;&#x542F;&#x5B8C;&#x5168;&#x9875;&#x5806;<br></p><figure class="highlight cmd hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">gflags /p /enable calc.exe /full</span><br><span class="line">gflags /I calc.exe +hpa</span><br><span class="line">gflags /p /disable calc.exe /full</span><br><span class="line">gflags /I calc.exe -hpa</span><br></pre></td></tr></tbody></table></figure><br>IE&#x5F00;&#x542F;&#x9875;&#x5806;&#x548C;&#x5806;&#x6808;&#x8DDF;&#x8E2A;<br><figure class="highlight cmd hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gflags.exe /i iexplore.exe +ust +hpa</span><br></pre></td></tr></tbody></table></figure><br><a href="http://blog.csdn.net/zcc1414/article/details/38396411" target="_blank" rel="noopener"></a><p></p>
+<h2 id="ust-user-stack-trace"><a href="#ust-user-stack-trace" class="headerlink" title="ust(user stack trace)"></a>ust(user stack trace)</h2></body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/windbg/">#windbg</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/2017/01/02/memory-alignment/">内存对齐</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/2016/12/11/About-ActiveX/">about ActiveX</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2020 icepng&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/" target="_blank" rel="noopener">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("en-AU");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

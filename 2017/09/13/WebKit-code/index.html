@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>WebKit执行结合对应的源代码 - icepng&#39;s  blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="WebKit WebKit &amp;#x4F5C;&amp;#x4E3A;&amp;#x6D4F;&amp;#x89C8;&amp;#x5668;&amp;#x5185;&amp;#x6838;&amp;#xFF0C;&amp;#x7ED3;&amp;#x6784;&amp;#x5F88;&amp;#x590D;&amp;#x6742;&amp;#xFF0C;&amp;#x672C;&amp;#x6B21;&amp;#x4E3B;&amp;#x8981;&amp;#x9488;&amp;#x5BF9;&amp;#x4E8E;&amp;#x5176;&amp;#x51E0;&amp;#">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WebKit执行结合对应的源代码">
+<meta property="og:url" content="https://icepng.github.io/2017/09/13/WebKit-code/index.html">
+<meta property="og:site_name" content="icepng&#39;s  blog">
+<meta property="og:description" content="WebKit WebKit &amp;#x4F5C;&amp;#x4E3A;&amp;#x6D4F;&amp;#x89C8;&amp;#x5668;&amp;#x5185;&amp;#x6838;&amp;#xFF0C;&amp;#x7ED3;&amp;#x6784;&amp;#x5F88;&amp;#x590D;&amp;#x6742;&amp;#xFF0C;&amp;#x672C;&amp;#x6B21;&amp;#x4E3B;&amp;#x8981;&amp;#x9488;&amp;#x5BF9;&amp;#x4E8E;&amp;#x5176;&amp;#x51E0;&amp;#">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://icepng.github.io/images/WebKit-code/Frame-Document.png">
+<meta property="og:image" content="https://icepng.github.io/images/WebKit-code/2.png">
+<meta property="og:image" content="https://icepng.github.io/images/WebKit-code/3.PNG">
+<meta property="og:image" content="https://icepng.github.io/images/WebKit-code/4.PNG">
+<meta property="og:image" content="https://icepng.github.io/images/WebKit-code/5.PNG">
+<meta property="og:image" content="https://icepng.github.io/images/WebKit-code/6.PNG">
+<meta property="og:image" content="https://icepng.github.io/images/WebKit-code/7.PNG">
+<meta property="og:image" content="https://icepng.github.io/images/WebKit-code/8.PNG">
+<meta property="og:image" content="https://icepng.github.io/images/WebKit-code/9.PNG">
+<meta property="og:image" content="https://icepng.github.io/images/WebKit-code/10.png">
+<meta property="og:image" content="https://icepng.github.io/images/WebKit-code/11.PNG">
+<meta property="article:published_time" content="2017-09-13T12:46:16.000Z">
+<meta property="article:modified_time" content="2017-10-17T06:47:52.350Z">
+<meta property="article:author" content="icepng">
+<meta property="article:tag" content="browser">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://icepng.github.io/images/WebKit-code/Frame-Document.png">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <p> ICEPNG </p>
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/categories">Categories</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="Search" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="Table of Contents">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#WebKit">1&nbsp;&nbsp;<b>WebKit</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#HTML-解释器">2&nbsp;&nbsp;<b>HTML 解释器</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#HTML解释器处理流程">2.1&nbsp;&nbsp;HTML解释器处理流程</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#对应源代码处理类">2.2&nbsp;&nbsp;对应源代码处理类</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#DOM树的构建">2.3&nbsp;&nbsp;DOM树的构建</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#JavaScript-解析引擎">3&nbsp;&nbsp;<b>JavaScript 解析引擎</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#JSC处理的基本流程">3.1&nbsp;&nbsp;JSC处理的基本流程</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#对应JSC的源代码">3.2&nbsp;&nbsp;对应JSC的源代码</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#参考">4&nbsp;&nbsp;<b>参考</b></a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/icepng" target="_blank" rel="noopener">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            WebKit执行结合对应的源代码
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2017-09-13T12:46:16.000Z" itemprop="datePublished">Sep 13 2017</time>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            9 minutes read (About 1395 words)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><h2 id="WebKit"><a href="#WebKit" class="headerlink" title="WebKit"></a>WebKit</h2><p>WebKit &#x4F5C;&#x4E3A;&#x6D4F;&#x89C8;&#x5668;&#x5185;&#x6838;&#xFF0C;&#x7ED3;&#x6784;&#x5F88;&#x590D;&#x6742;&#xFF0C;&#x672C;&#x6B21;&#x4E3B;&#x8981;&#x9488;&#x5BF9;&#x4E8E;&#x5176;&#x51E0;&#x4E2A;&#x6838;&#x5FC3;&#x7ED3;&#x6784;&#x8FDB;&#x884C;&#x5206;&#x6790;&#xFF0C;&#x6574;&#x4F53;&#x7ED3;&#x6784;&#x4E0D;&#x6D89;&#x53CA;&#x5230;&#x5F88;&#x7EC6;&#x8282;&#x7684;&#x4EE3;&#x7801;&#x5B9E;&#x73B0;&#x3002;&#x5206;&#x6790;&#x6D41;&#x7A0B;&#x5305;&#x62EC;&#x4E09;&#x6B65;&#xFF1A;1. &#x6574;&#x4F53;&#x7684;&#x6267;&#x884C;&#x6D41;&#x7A0B;&#xFF0C;2. &#x5BF9;&#x5E94;&#x6E90;&#x4EE3;&#x7801;&#x4E2D;&#x7684;&#x6838;&#x5FC3;&#x5904;&#x7406;&#x7C7B;&#xFF0C;3. &#x76F8;&#x5173;&#x90E8;&#x5206;&#x7EC6;&#x8282;&#x4ECB;&#x7ECD;</p>
+<h2 id="HTML-&#x89E3;&#x91CA;&#x5668;"><a href="#HTML-&#x89E3;&#x91CA;&#x5668;" class="headerlink" title="HTML &#x89E3;&#x91CA;&#x5668;"></a>HTML &#x89E3;&#x91CA;&#x5668;</h2><p>HTML&#x89E3;&#x91CA;&#x5668;&#x662F;&#x5BF9;&#x7F51;&#x9875;&#x4E2D;&#x7684;HTML&#x89E3;&#x6790;&#x7684;&#x8FC7;&#x7A0B;&#xFF0C;&#x6700;&#x540E;&#x5C06;&#x5904;&#x7406;&#x6210;&#x4E3A;DOM&#x6811;&#x7ED3;&#x6784;&#x3002;<br>HTML&#x89E3;&#x91CA;&#x5668;&#x7684;&#x8F93;&#x5165;&#x4E3A;&#x7F51;&#x7EDC;&#x6216;&#x8005;&#x672C;&#x5730;&#x78C1;&#x76D8;&#x4E2D;&#x83B7;&#x53D6;&#x7684;HTML&#x7F51;&#x9875;&#x548C;&#x8D44;&#x6E90;&#x5B57;&#x8282;&#x6D41;&#xFF1B;&#x8F93;&#x51FA;&#x4E3A;DOM&#x6811;&#x7ED3;&#x6784;&#xFF08;WebKit&#x6280;&#x672F;&#x5185;&#x5E55; P107&#xFF09;&#x3002;<br>&#x8FD9;&#x4E5F;&#x662F;&#x6D4F;&#x89C8;&#x5668;&#x6267;&#x884C;&#x7684;&#x6700;&#x8D77;&#x59CB;&#x7684;&#x6B65;&#x9AA4;&#xFF0C;&#x5F53;&#x5728;&#x7F51;&#x9875;&#x4E2D;&#x8F93;&#x5165;&#x4E00;&#x4E2A;URL&#x65F6;&#xFF0C;&#x76F8;&#x5173;&#x5B57;&#x8282;&#x6D41;&#x6570;&#x636E;&#x5C06;&#x4F1A;&#x4F20;&#x56DE;&#x7ED9;&#x6D4F;&#x89C8;&#x5668;&#xFF0C;HTML&#x89E3;&#x91CA;&#x5668;&#x5C06;&#x5F00;&#x59CB;&#x5904;&#x7406;&#x3002;</p>
+<h3 id="HTML&#x89E3;&#x91CA;&#x5668;&#x5904;&#x7406;&#x6D41;&#x7A0B;"><a href="#HTML&#x89E3;&#x91CA;&#x5668;&#x5904;&#x7406;&#x6D41;&#x7A0B;" class="headerlink" title="HTML&#x89E3;&#x91CA;&#x5668;&#x5904;&#x7406;&#x6D41;&#x7A0B;"></a>HTML&#x89E3;&#x91CA;&#x5668;&#x5904;&#x7406;&#x6D41;&#x7A0B;</h3><p>&#x5B57;&#x8282;&#x6D41;&#x5904;&#x7406;&#x6210;&#x4E3A;&#x5B57;&#x7B26;&#x6D41;&#xFF0C;&#x53EF;&#x4EE5;&#x770B;&#x6210;&#x5C31;&#x662F;&#x5E73;&#x65F6;&#x6211;&#x4EEC;&#x770B;&#x5230;&#x7684;&#x7F51;&#x9875;<br></p><figure class="highlight html hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span></span><br><span class="line">	<span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>...<span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span></span><br><span class="line">	<span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>...<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span></span><br></pre></td></tr></tbody></table></figure><br>&#x7136;&#x540E;&#x5C06;&#x91CC;&#x9762;&#x7684;&#x6807;&#x7B7E;&#x3001;&#x503C;&#x7B49;&#x63D0;&#x53D6;&#x51FA;&#x6765;&#x5F62;&#x6210;&#x4E00;&#x4E2A;&#x4E2A;&#x8BCD;&#x8BED;token&#xFF0C;&#x7136;&#x540E;&#x518D;&#x4F9D;&#x636E;token&#x521B;&#x5EFA;&#x8282;&#x70B9;&#xFF0C;&#x518D;&#x5C06;&#x5176;&#x52A0;&#x5165;&#x5230;DOM&#x6811;&#x4E2D;&#x5B8C;&#x6210;DOM&#x7684;&#x6784;&#x5EFA;&#x3002;<br>&#x5BF9;&#x5E94;&#x4E8E;WebKit&#x7684;&#x5904;&#x7406;&#xFF1A;<br>&#x4F5C;&#x4E3A;&#x6846;&#x7ED3;&#x6784;&#x7684;&#x5904;&#x7406;&#xFF0C;&#x6574;&#x4E2A;&#x4F5C;&#x4E3A;&#x4E00;&#x4E2A;MainFrame&#xFF0C;&#x6846;&#x91CC;&#x9762;&#x662F;&#x4E00;&#x4E2A;Document&#xFF0C;Document&#x91CC;&#x9762;&#x53EF;&#x4EE5;&#x5D4C;&#x5165;&#x591A;&#x4E2A;&#x5B50;&#x6846;&#xFF0C;&#x7ED3;&#x6784;&#x7C7B;&#x4F3C;&#x3002;<br><img src="/images/WebKit-code/Frame-Document.png" alt="Frame-Document"><br>&#x6240;&#x4EE5;&#x5904;&#x7406;&#x7684;&#x5165;&#x53E3;&#x51FD;&#x6570;&#x662F;Frame&#x76F8;&#x5173;&#x7684;&#x5904;&#x7406;&#xFF0C;&#x5927;&#x81F4;&#x6D41;&#x7A0B;&#x5982;&#x4E0B;&#xFF1A;<br><img src="/images/WebKit-code/2.png" alt="Main-Class"><br>&#x9996;&#x5148;&#x662F;&#x8C03;&#x7528;FrameLoader&#xFF0C;&#x7528;&#x4E8E;&#x6846;&#x5185;&#x5BB9;&#x7684;&#x52A0;&#x8F7D;&#xFF0C;&#x7136;&#x540E;&#x5728;FrameLoader&#x4E2D;&#x5C06;&#x52A0;&#x8F7D;DocumentLoader&#x7528;&#x4E8E;Document&#x5185;&#x5BB9;&#x7684;&#x52A0;&#x8F7D;&#xFF1B;&#x6B64;&#x65F6;&#x5C06;&#x8C03;&#x7528;DocumentWriter&#x7528;&#x4E8E;&#x521B;&#x5EFA;Document&#x8282;&#x70B9;&#xFF0C;&#x5373;DOM&#x6811;&#x7684;&#x6839;&#x8282;&#x70B9;HTMLDocument&#x5BF9;&#x8C61;&#xFF1B;&#x7136;&#x540E;&#x5C06;&#x8C03;&#x7528;HTMLDocumentParser&#x89E3;&#x6790;HTML&#xFF0C;&#x5728;&#x6839;&#x8282;&#x70B9;&#x7684;&#x57FA;&#x7840;&#x4E0A;&#x5B8C;&#x5584;DOM&#x6811;&#xFF0C;&#x6700;&#x7EC8;&#x5B9E;&#x73B0;DOM&#x6811;&#x7684;&#x6784;&#x5EFA;&#x3002;<p></p>
+<h3 id="&#x5BF9;&#x5E94;&#x6E90;&#x4EE3;&#x7801;&#x5904;&#x7406;&#x7C7B;"><a href="#&#x5BF9;&#x5E94;&#x6E90;&#x4EE3;&#x7801;&#x5904;&#x7406;&#x7C7B;" class="headerlink" title="&#x5BF9;&#x5E94;&#x6E90;&#x4EE3;&#x7801;&#x5904;&#x7406;&#x7C7B;"></a>&#x5BF9;&#x5E94;&#x6E90;&#x4EE3;&#x7801;&#x5904;&#x7406;&#x7C7B;</h3><p>&#x52A0;&#x8F7D;&#x8FC7;&#x7A0B;&#x4E2D;&#x8C03;&#x7528;DocumentWriter&#x6765;&#x521B;&#x5EFA;Document&#x6839;&#x8282;&#x70B9;:<br><img src="/images/WebKit-code/3.PNG" alt="Create-Document"><br>&#x7136;&#x540E;&#x5C06;&#x5F97;&#x5230;&#x4E00;&#x4E2A;DocumentParser&#x5BF9;&#x8C61;&#xFF0C;&#x7528;&#x4E8E;&#x540E;&#x9762;&#x7684;HTML&#x89E3;&#x6790;<br><img src="/images/WebKit-code/4.PNG" alt="m_parser"></p>
+<p>&#x5728;HTMLDocumentParser&#x4E2D;&#x89E3;&#x6790;HTML&#x4EE3;&#x7801;&#x521B;&#x5EFA;DOM&#x6811;&#xFF0C;&#x4E3B;&#x8981;&#x6D41;&#x7A0B;&#x5728;HTMLDocumentParser::pumpTokenizerLoop&#x51FD;&#x6570;&#x4E2D;&#xFF0C;&#x5FAA;&#x73AF;&#x5904;&#x7406;Token&#xFF0C;&#x5177;&#x4F53;&#x5728;&#x4E0B;&#x56FE;&#x6240;&#x793A;&#xFF1A;<br><img src="/images/WebKit-code/5.PNG" alt="HTMLDocumentParser"><br>&#x4E3B;&#x8981;&#x5305;&#x542B;&#x4E09;&#x6B65;&#xFF1A;</p>
+<ol>
+<li>&#x4ECE;HTML&#x5B57;&#x7B26;&#x4E32;&#x4E2D;&#x63D0;&#x53D6;&#x51FA;token</li>
+<li>&#x5BF9;&#x63D0;&#x53D6;&#x7684;token&#x4F7F;&#x7528;XSSAuditor&#x8FDB;&#x884C;&#x8FC7;&#x6EE4;</li>
+<li>&#x4F9D;&#x636E;token&#x8FDB;&#x884C;DOM&#x6811;&#x7684;&#x6784;&#x5EFA;<br>&#x63D0;&#x53D6;token&#x4E3B;&#x8981;&#x7531;HTMLTokenizer&#x7C7B;&#x6765;&#x8FDB;&#x884C;&#x5904;&#x7406;&#xFF1B;XSSAuditor&#x8FC7;&#x6EE4;&#x7528;XSSAuditor&#x8FDB;&#x884C;&#x5904;&#x7406;&#xFF0C;&#x8C03;&#x7528;filterToken&#x51FD;&#x6570;&#xFF1B;&#x4F9D;&#x636E;token&#x8FDB;&#x884C;DOM&#x6811;&#x6784;&#x5EFA;&#x4E3B;&#x8981;&#x6709;HTMLTreeBuilder&#x7C7B;&#x6765;&#x8FDB;&#x884C;&#x5904;&#x7406;&#xFF0C;&#x8C03;&#x7528;constructTree&#x51FD;&#x6570;&#x3002;<br>&#x4E0B;&#x9762;&#x91CD;&#x70B9;&#x770B;&#x4E00;&#x4E0B;&#x7531;token&#x5230;DOM&#x8282;&#x70B9;&#x7684;&#x63D2;&#x5165;&#x8FC7;&#x7A0B;&#x3002;</li>
+</ol>
+<h3 id="DOM&#x6811;&#x7684;&#x6784;&#x5EFA;"><a href="#DOM&#x6811;&#x7684;&#x6784;&#x5EFA;" class="headerlink" title="DOM&#x6811;&#x7684;&#x6784;&#x5EFA;"></a>DOM&#x6811;&#x7684;&#x6784;&#x5EFA;</h3><p>&#x63A5;&#x7740;&#x4E0A;&#x9762;&#x7684;&#x63CF;&#x8FF0;&#xFF0C;&#x5F53;&#x83B7;&#x53D6;&#x5230;&#x4E00;&#x4E2A;token&#x65F6;&#xFF0C;&#x5C06;&#x4F7F;&#x7528;&#x5176;&#x8FDB;&#x884C;DOM&#x6784;&#x5EFA;&#xFF0C;&#x5373;&#x52A0;&#x5165;&#x5230;DOM&#x6811;&#x4E2D;&#xFF0C;&#x5165;&#x53E3;&#x51FD;&#x6570;&#x4E3A;HTMLTreeBuilder::constructTree&#xFF0C;&#x8F93;&#x5165;&#x7684;&#x53C2;&#x6570;&#x4E3A;token&#x3002;<br><img src="/images/WebKit-code/6.PNG" alt="ConstructTree"><br>&#x9996;&#x5148;&#x662F;processToken&#xFF0C;&#x7528;&#x4E8E;&#x5BF9;token&#x7684;&#x5904;&#x7406;<br><img src="/images/WebKit-code/7.PNG" alt="processToken"><br>&#x8FD9;&#x91CC;&#x4F1A;&#x5BF9;token&#x8FDB;&#x884C;&#x5206;&#x7C7B;&#xFF0C;WebKit&#x5BF9;&#x5176;&#x4E00;&#x5171;&#x5206;&#x4E3A;&#x4E86;6&#x7C7B;&#xFF0C;&#x5047;&#x8BBE;&#x8FD9;&#x91CC;&#x4E3A;StartTag&#xFF0C;&#x5219;&#x8FDB;&#x5165;processStartTag&#x51FD;&#x6570;&#x8FDB;&#x4E00;&#x6B65;&#x5904;&#x7406;&#xFF0C;&#x7136;&#x540E;&#x4F9D;&#x636E;&#x8BE5;token&#x9700;&#x8981;&#x63D2;&#x5165;&#x7684;&#x4F4D;&#x7F6E;&#x6765;&#x8FDB;&#x4E00;&#x6B65;&#x8C03;&#x7528;&#x4E0D;&#x540C;&#x7684;&#x51FD;&#x6570;&#x5904;&#x7406;&#xFF0C;&#x4F8B;&#x5982;&#xFF0C;&#x5224;&#x65AD;&#x662F;&#x5426;&#x5728;head&#x4E4B;&#x524D;&#xFF0C;&#x7136;&#x540E;&#x8FDB;&#x4E00;&#x6B65;&#x5224;&#x65AD;&#x662F;html&#x6807;&#x7B7E;&#x6216;&#x662F;head&#x6807;&#x7B7E;&#xFF0C;&#x8FD9;&#x91CC;&#x4E3A;&#x4E86;&#x7B80;&#x5355;&#x5206;&#x6790;&#xFF0C;&#x5047;&#x8BBE;&#x8FDB;&#x5165;&#x7684;token&#x662F;&#x4E00;&#x4E2A;body&#x6807;&#x7B7E;&#x3002;<br>&#x90A3;&#x4E48;&#x5C06;&#x4F1A;&#x8FDB;&#x5165;AfterHead&#x5206;&#x652F;&#xFF0C;&#x7136;&#x540E;&#x8FDB;&#x4E00;&#x6B65;&#x8C03;&#x7528;m_tree.insertHTMLBodyElement(WTFMove(token));&#x8FDB;&#x4E00;&#x6B65;&#x5904;&#x7406;&#x3002;<br><img src="/images/WebKit-code/8.PNG" alt="bodyTag"><br>&#x8FD9;&#x91CC;m_tree&#x662F;&#x4E00;&#x4E2A;HTMLConstructionSite&#x7C7B;&#x7684;&#x5BF9;&#x8C61;&#xFF0C;&#x56E0;&#x6B64;&#x5C06;&#x4F1A;&#x7531;HTMLConstructionSite&#x8FDB;&#x884C;&#x8282;&#x70B9;&#x5BF9;&#x8C61;&#x7684;&#x521B;&#x5EFA;&#xFF0C;&#x8FD9;&#x91CC;&#x662F;body&#x5C06;&#x4F1A;&#x8C03;&#x7528;body&#x7684;&#x521B;&#x5EFA;&#x4E0E;&#x63D2;&#x5165;&#x3002;&#x5728;HTMLConstructionSite&#x7C7B;&#x4E2D;&#x53EF;&#x4EE5;&#x53D1;&#x73B0;&#x5BF9;&#x5F88;&#x591A;&#x4E0D;&#x540C;&#x7684;&#x5143;&#x7D20;&#x90FD;&#x6709;&#x76F8;&#x5E94;&#x7684;&#x51FD;&#x6570;&#x6765;&#x8FDB;&#x884C;&#x5904;&#x7406;&#x3002;<br><img src="/images/WebKit-code/9.PNG" alt="HTMLConstructionSite"><br>&#x8FD9;&#x91CC;&#x662F;&#x5BF9;body&#x5904;&#x7406;&#xFF0C;&#x9996;&#x5148;&#x662F;&#x521B;&#x5EFA;&#x4E00;&#x4E2A;body&#x5143;&#x7D20;&#x5BF9;&#x5E94;&#x7684;&#x5BF9;&#x8C61;&#xFF0C;&#x7136;&#x540E;m_openElements.pushHTMLBodyElement&#xFF0C;&#x8FD9;&#x91CC;&#x5176;&#x5B9E;&#x662F;&#x7EF4;&#x62A4;&#x4E86;&#x4E00;&#x4E2A;&#x5143;&#x7D20;&#x7684;&#x6808;&#xFF0C;m_openElements&#x662F;HTMLElementStack&#x7C7B;&#x7684;&#x4E00;&#x4E2A;&#x5BF9;&#x8C61;&#xFF1B;&#x8FD9;&#x91CC;&#x7684;&#x5143;&#x7D20;&#x662F;&#x5F53;&#x524D;&#x6709;&#x5F00;&#x59CB;&#x6807;&#x8BC6;&#x4F46;&#x662F;&#x8FD8;&#x6CA1;&#x6709;&#x7ED3;&#x675F;&#x6807;&#x8BC6;&#x7684;&#x5143;&#x7D20;&#x8282;&#x70B9;&#x3002;&#x4E00;&#x4E2A;&#x6BD4;&#x8F83;&#x5F62;&#x8C61;&#x7684;&#x4F8B;&#x5B50;&#xFF0C;(WebKit&#x6280;&#x672F;&#x5185;&#x5E55; P113)<br>&#x5F53;HTML&#x5305;&#x542B;&#x6807;&#x7B7E;&#x7247;&#x6BB5;&#xFF1A;<br></p><figure class="highlight html hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">img</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">img</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span></span><br></pre></td></tr></tbody></table></figure><br>&#x4F9D;&#x6B21;&#x9047;&#x5230;&#x5F00;&#x59CB;&#x6807;&#x8BC6;&#xFF0C;&#x7136;&#x540E;&#x4F9D;&#x6B21;&#x538B;&#x6808;&#xFF0C;&#x5F53;&#x201D;img&#x201D;&#x5904;&#x7406;&#x7ED3;&#x675F;&#x540E;&#xFF0C;&#x9047;&#x5230;&#x201D;/img&#x201D;&#x7ED3;&#x675F;&#x6807;&#x8BC6;&#xFF0C;&#x7136;&#x540E;&#x51FA;&#x6808;&#xFF0C;img&#x5143;&#x7D20;&#x5C31;&#x662F;div&#x5143;&#x7D20;&#x7684;&#x5B50;&#x8282;&#x70B9;&#xFF1B;&#x4EE5;&#x6B64;&#x7C7B;&#x63A8;&#x3002;<p></p>
+<h2 id="JavaScript-&#x89E3;&#x6790;&#x5F15;&#x64CE;"><a href="#JavaScript-&#x89E3;&#x6790;&#x5F15;&#x64CE;" class="headerlink" title="JavaScript &#x89E3;&#x6790;&#x5F15;&#x64CE;"></a>JavaScript &#x89E3;&#x6790;&#x5F15;&#x64CE;</h2><p>JS&#x5F15;&#x64CE;&#x5305;&#x62EC;&#x4E24;&#x4E2A;&#xFF0C;&#x4E00;&#x4E2A;&#x662F;WebKit&#x9ED8;&#x8BA4;&#x7684;JSC(JavaScriptCore)&#xFF0C;&#x7528;&#x4E8E;Safari&#x91CC;&#x9762;(&#x672A;&#x9A8C;&#x8BC1;)&#xFF1B;&#x4E00;&#x4E2A;&#x662F;JS V8&#xFF0C;&#x7528;&#x4E8E;Chrome&#x91CC;&#x9762;&#x3002;&#x8FD9;&#x91CC;&#x4E3B;&#x8981;&#x4ECB;&#x7ECD;&#x7684;&#x662F;&#x9ED8;&#x8BA4;&#x7684;JS&#x5F15;&#x64CE;JSC&#x3002;</p>
+<h3 id="JSC&#x5904;&#x7406;&#x7684;&#x57FA;&#x672C;&#x6D41;&#x7A0B;"><a href="#JSC&#x5904;&#x7406;&#x7684;&#x57FA;&#x672C;&#x6D41;&#x7A0B;" class="headerlink" title="JSC&#x5904;&#x7406;&#x7684;&#x57FA;&#x672C;&#x6D41;&#x7A0B;"></a>JSC&#x5904;&#x7406;&#x7684;&#x57FA;&#x672C;&#x6D41;&#x7A0B;</h3><p>&#x57FA;&#x672C;&#x7ED3;&#x6784;&#x548C;&#x4E00;&#x822C;&#x7684;&#x7A0B;&#x5E8F;&#x8BED;&#x8A00;&#x7F16;&#x8BD1;&#x89E3;&#x91CA;&#x5668;&#x7C7B;&#x4F3C;&#x3002;&#x5176;&#x6D41;&#x7A0B;&#x5982;&#x4E0B;&#x56FE;&#xFF1A;<br><img src="/images/WebKit-code/10.png" alt="JSC"></p>
+<h3 id="&#x5BF9;&#x5E94;JSC&#x7684;&#x6E90;&#x4EE3;&#x7801;"><a href="#&#x5BF9;&#x5E94;JSC&#x7684;&#x6E90;&#x4EE3;&#x7801;" class="headerlink" title="&#x5BF9;&#x5E94;JSC&#x7684;&#x6E90;&#x4EE3;&#x7801;"></a>&#x5BF9;&#x5E94;JSC&#x7684;&#x6E90;&#x4EE3;&#x7801;</h3><p>JSC&#x7684;&#x6E90;&#x4EE3;&#x7801;&#x5728;/Source/JavaScriptCore&#x6587;&#x4EF6;&#x5939;&#x91CC;<br>&#x5F00;&#x59CB;&#x5728;Parser.cpp&#x4E2D;&#xFF0C;&#x5305;&#x542B;&#x7684;&#x51E0;&#x4E2A;&#x5173;&#x952E;&#x7684;&#x53D8;&#x91CF;&#xFF1A;m_lexer&#xFF0C;&#x7528;&#x4E8E;&#x8BCD;&#x6CD5;&#x5206;&#x6790;&#x5668;&#x8C03;&#x7528;&#xFF0C;&#x5C06;&#x5B57;&#x7B26;&#x5E8F;&#x5217;&#x8F6C;&#x6210;token&#x5E8F;&#x5217;&#xFF0C;&#x5728;Lexer.cpp&#x4E2D;&#x5B9E;&#x73B0;<br>&#x8FDB;&#x5165;&#x89E3;&#x6790;&#x7684;&#x5165;&#x53E3;&#x51FD;&#x6570;&#xFF0C;Parser<lexertype>::Parser<br><img src="/images/WebKit-code/11.PNG" alt="JSC-Parser"><br>&#x5176;&#x4E2D;source&#x662F;&#x8F93;&#x5165;&#x7684;JS&#x4EE3;&#x7801;&#xFF0C;&#x6E90;&#x5B57;&#x7B26;&#x4E32;</lexertype></p>
+<h2 id="&#x53C2;&#x8003;"><a href="#&#x53C2;&#x8003;" class="headerlink" title="&#x53C2;&#x8003;"></a>&#x53C2;&#x8003;</h2><p>WebKit&#x6280;&#x672F;&#x5185;&#x5E55;<br>WebKit&#x5F00;&#x6E90;&#x4EE3;&#x7801;(&#x6700;&#x540E;&#x4FEE;&#x6539;: 2017-09-03  Sam Weinig)<br>WebKit vulnerability from 0 to 1 (KCon 2017)</p>
+</body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/browser/">#browser</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/2017/09/15/idapython/">idapython</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/2017/09/12/sublime-plugin/">Sublime Plugins</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2020 icepng&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/" target="_blank" rel="noopener">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("en-AU");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>
