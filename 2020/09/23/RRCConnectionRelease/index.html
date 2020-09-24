@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>LTE RRCConnectionRelease Redirect问题分析 - icepng&#39;s  blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="&amp;#x8FD9;&amp;#x4E2A;&amp;#x95EE;&amp;#x9898;&amp;#x662F;&amp;#x5728;16&amp;#x5E74;&amp;#x88AB;&amp;#x56FD;&amp;#x5185;&amp;#x7814;&amp;#x7A76;&amp;#x5458;&amp;#x53D1;&amp;#x73B0;&amp;#x63D0;&amp;#x51FA;&amp;#xFF0C;&amp;#x5E76;&amp;#x5B9E;&amp;#x73B0;&amp;#x4E86;&amp;#x5B8C;&amp;#x6574;&amp;#x768">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LTE RRCConnectionRelease Redirect问题分析">
+<meta property="og:url" content="https://icepng.github.io/2020/09/23/RRCConnectionRelease/index.html">
+<meta property="og:site_name" content="icepng&#39;s  blog">
+<meta property="og:description" content="&amp;#x8FD9;&amp;#x4E2A;&amp;#x95EE;&amp;#x9898;&amp;#x662F;&amp;#x5728;16&amp;#x5E74;&amp;#x88AB;&amp;#x56FD;&amp;#x5185;&amp;#x7814;&amp;#x7A76;&amp;#x5458;&amp;#x53D1;&amp;#x73B0;&amp;#x63D0;&amp;#x51FA;&amp;#xFF0C;&amp;#x5E76;&amp;#x5B9E;&amp;#x73B0;&amp;#x4E86;&amp;#x5B8C;&amp;#x6574;&amp;#x768">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://icepng.github.io/images/RRCConnectionRelease.assets/image-20200922211501652-1600956721344.png">
+<meta property="article:published_time" content="2020-09-23T13:01:06.000Z">
+<meta property="article:modified_time" content="2020-09-24T14:58:01.467Z">
+<meta property="article:author" content="icepng">
+<meta property="article:tag" content="5G">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://icepng.github.io/images/RRCConnectionRelease.assets/image-20200922211501652-1600956721344.png">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow-night-bright.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <p> ICEPNG </p>
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/categories">Categories</a>
+            
+            <a class="navbar-item "
+               href="/categories/vuls">Vuls</a>
+            
+            <a class="navbar-item "
+               href="/categories/5G">5G</a>
+            
+            <a class="navbar-item "
+               href="/categories/iots">iots</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="Search" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="Table of Contents">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#基本原理">1&nbsp;&nbsp;<b>基本原理</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#环境">2&nbsp;&nbsp;<b>环境</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#添加redirectedCarrierInfo">3&nbsp;&nbsp;<b>添加redirectedCarrierInfo</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#后续">4&nbsp;&nbsp;<b>后续</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#相关文档参考">5&nbsp;&nbsp;<b>相关文档参考</b></a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/icepng" target="_blank" rel="noopener">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            LTE RRCConnectionRelease Redirect问题分析
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-09-23T13:01:06.000Z" itemprop="datePublished">Sep 23 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/5G/">5G</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            8 minutes read (About 1238 words)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>&#x8FD9;&#x4E2A;&#x95EE;&#x9898;&#x662F;&#x5728;16&#x5E74;&#x88AB;&#x56FD;&#x5185;&#x7814;&#x7A76;&#x5458;&#x53D1;&#x73B0;&#x63D0;&#x51FA;&#xFF0C;&#x5E76;&#x5B9E;&#x73B0;&#x4E86;&#x5B8C;&#x6574;&#x7684;&#x653B;&#x51FB;&#x3002;&#x56E0;&#x4E3A;&#x8FD9;&#x662F;&#x4E00;&#x4E2A;&#x5F88;&#x7ECF;&#x5178;&#x7684;&#x95EE;&#x9898;&#xFF0C;&#x5728;&#x5B66;&#x4E60;LTE/5G&#x5B89;&#x5168;&#x8FC7;&#x7A0B;&#x4E2D;&#x590D;&#x73B0;&#x4E00;&#x4E0B;&#x4E5F;&#x662F;&#x5F88;&#x6709;&#x5FC5;&#x8981;&#x7684;&#x3002;&#x6211;&#x5927;&#x6982;&#x662F;&#x5728;&#x4ECA;&#x5E74;&#x521D;&#x5206;&#x6790;&#x590D;&#x73B0;&#x8FD9;&#x4E2A;&#x95EE;&#x9898;&#x3002;</p>
+<p><strong>RRCConnectionRelease</strong>&#x5728;5GNR&#x4E2D;&#x662F;<strong>RRCRelease</strong>.</p>
+<p><strong>RRCConnectionRelease</strong>&#x6B63;&#x5E38;&#x7684;&#x4F7F;&#x7528;&#x662F;&#xFF1A;</p>
+<p><img src="/images/RRCConnectionRelease.assets/image-20200922211501652-1600956721344.png" alt="image-20200922211501652"></p>
+<p>&#x7531;&#x57FA;&#x7AD9;&#x53D1;&#x7ED9;UE&#xFF0C;&#x4F5C;&#x7528;&#x5305;&#x62EC;&#x91CA;&#x653E;&#x4E00;&#x4E2A;rrc connection&#x2026;</p>
+<h2 id="&#x57FA;&#x672C;&#x539F;&#x7406;"><a href="#&#x57FA;&#x672C;&#x539F;&#x7406;" class="headerlink" title="&#x57FA;&#x672C;&#x539F;&#x7406;"></a>&#x57FA;&#x672C;&#x539F;&#x7406;</h2><p>&#x5F53;&#x5728;nas&#x5C42;reject&#x5F53;&#x524D;&#x8FDE;&#x63A5;&#x540E;&#xFF0C;ue&#x63A5;&#x6536;&#x540E;&#xFF0C;&#x4F1A;&#x89E6;&#x53D1;&#x57FA;&#x7AD9;&#x53D1;&#x9001;rrcconnectionrelease&#x7ED9;UE&#xFF0C;&#x6B64;&#x65F6;UE&#x4F1A;&#x5BF9;rrcconnectionrelease&#x5305;&#x8FDB;&#x884C;&#x89E3;&#x6790;&#xFF0C;&#x56E0;&#x4E3A;&#x672C;&#x8EAB;&#x4E5F;&#x662F;&#x8FDE;&#x63A5;&#x51FA;&#x73B0;&#x95EE;&#x9898;&#x624D;&#x4F1A;&#x89E6;&#x53D1;rrcconnectionrelease&#xFF0C;&#x5373;&#x6709;&#x53EF;&#x80FD;&#x662F;&#x5C31;&#x662F;&#x57FA;&#x7AD9;&#x5C42;&#x4E22;&#x5931;&#x4E86;&#x4E00;&#x5F00;&#x59CB;&#x6CE8;&#x518C;&#x5165;&#x7F51;&#x7684;key&#x7B49;&#x4FE1;&#x606F;&#x3002;&#x56E0;&#x6B64;&#x534F;&#x8BAE;&#x4E0A;&#x6700;&#x5F00;&#x59CB;&#x7684;&#x63CF;&#x8FF0;&#xFF0C;UE&#x63A5;&#x6536;&#x540E;&#x5E76;&#x4E0D;&#x4F1A;&#x5BF9;rrcconnectionrelease&#x7684;&#x5B8C;&#x6574;&#x6027;&#x8FDB;&#x884C;&#x6821;&#x9A8C;&#xFF0C;&#x800C;&#x76F4;&#x63A5;&#x63A5;&#x6536;&#x89E3;&#x6790;&#x3002;</p>
+<p>&#x5728;rrcconnectionrelease&#x4E2D;&#x53EF;&#x4EE5;&#x643A;&#x5E26;redirectedCarrierInfo&#x7ED3;&#x6784;&#xFF0C;&#x53EF;&#x4EE5;&#x76F4;&#x63A5;&#x67E5;&#x770B;asn&#x6587;&#x4EF6;&#x4E2D;&#x5BF9;&#x8BE5;&#x7ED3;&#x6784;&#x7684;&#x5B9A;&#x4E49;&#xFF1A;</p>
+<p></p><figure class="highlight c hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">LTE_RRCConnectionRelease_r8_IEs</span> {</span></span><br><span class="line">	LTE_ReleaseCause_t	 releaseCause;</span><br><span class="line">	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">LTE_RedirectedCarrierInfo</span>	*<span class="hljs-title">redirectedCarrierInfo</span>;</span>	<span class="hljs-comment">/* OPTIONAL */</span></span><br><span class="line">	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">LTE_IdleModeMobilityControlInfo</span>	*<span class="hljs-title">idleModeMobilityControlInfo</span>;</span>	<span class="hljs-comment">/* OPTIONAL */</span></span><br><span class="line">	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">LTE_RRCConnectionRelease_v890_IEs</span>	*<span class="hljs-title">nonCriticalExtension</span>;</span>	<span class="hljs-comment">/* OPTIONAL */</span></span><br><span class="line">	</span><br><span class="line">	<span class="hljs-comment">/* Context for parsing across buffer boundaries */</span></span><br><span class="line">	<span class="hljs-keyword">asn_struct_ctx_t</span> _asn_ctx;</span><br><span class="line">} LTE_RRCConnectionRelease_r8_IEs_t;</span><br><span class="line"><span class="hljs-comment">//////</span></span><br><span class="line"><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">enum</span> LTE_RedirectedCarrierInfo_PR {</span><br><span class="line">	LTE_RedirectedCarrierInfo_PR_NOTHING,	<span class="hljs-comment">/* No components present */</span></span><br><span class="line">	LTE_RedirectedCarrierInfo_PR_eutra,</span><br><span class="line">	LTE_RedirectedCarrierInfo_PR_geran,</span><br><span class="line">	LTE_RedirectedCarrierInfo_PR_utra_FDD,</span><br><span class="line">	LTE_RedirectedCarrierInfo_PR_utra_TDD,</span><br><span class="line">	LTE_RedirectedCarrierInfo_PR_cdma2000_HRPD,</span><br><span class="line">	LTE_RedirectedCarrierInfo_PR_cdma2000_1xRTT,</span><br><span class="line">	<span class="hljs-comment">/* Extensions may appear below */</span></span><br><span class="line">	LTE_RedirectedCarrierInfo_PR_utra_TDD_r10,</span><br><span class="line">	LTE_RedirectedCarrierInfo_PR_nr_r15</span><br><span class="line">} LTE_RedirectedCarrierInfo_PR;</span><br><span class="line"><span class="hljs-comment">//////</span></span><br><span class="line"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">LTE_RedirectedCarrierInfo</span> {</span></span><br><span class="line">	LTE_RedirectedCarrierInfo_PR present;</span><br><span class="line">	<span class="hljs-keyword">union</span> LTE_RedirectedCarrierInfo_u {</span><br><span class="line">		LTE_ARFCN_ValueEUTRA_t	 eutra;</span><br><span class="line">		LTE_CarrierFreqsGERAN_t	 geran;</span><br><span class="line">		LTE_ARFCN_ValueUTRA_t	 utra_FDD;</span><br><span class="line">		LTE_ARFCN_ValueUTRA_t	 utra_TDD;</span><br><span class="line">		LTE_CarrierFreqCDMA2000_t	 cdma2000_HRPD;</span><br><span class="line">		LTE_CarrierFreqCDMA2000_t	 cdma2000_1xRTT;</span><br><span class="line">		<span class="hljs-comment">/*</span></span><br><span class="line"><span class="hljs-comment">		 * This type is extensible,</span></span><br><span class="line"><span class="hljs-comment">		 * possible extensions are below.</span></span><br><span class="line"><span class="hljs-comment">		 */</span></span><br><span class="line">		LTE_CarrierFreqListUTRA_TDD_r10_t	 utra_TDD_r10;</span><br><span class="line">		LTE_CarrierInfoNR_r15_t	 nr_r15;</span><br><span class="line">	} choice;</span><br><span class="line">	</span><br><span class="line">	<span class="hljs-comment">/* Context for parsing across buffer boundaries */</span></span><br><span class="line">	<span class="hljs-keyword">asn_struct_ctx_t</span> _asn_ctx;</span><br><span class="line">} LTE_RedirectedCarrierInfo_t;</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>&#x53EF;&#x4EE5;&#x53D1;&#x73B0;redirectedCarrierInfo&#x5176;&#x5B9E;&#x662F;&#x7ED9;UE&#x63D0;&#x4F9B;&#x4E86;&#x4E00;&#x4E2A;/&#x591A;&#x4E2A;&#x53EF;&#x9009;&#x7684;&#x9891;&#x7387;/&#x9891;&#x9053;/arfcn&#x3002;&#x5F53;UE&#x6536;&#x5230;&#x540E;&#x4F1A;&#x6839;&#x636E;&#x8BE5;&#x4FE1;&#x606F;&#x9009;&#x62E9;&#x4E00;&#x4E2A;&#x5408;&#x9002;&#x7684;cell&#x3002;(The procedure can also be used to release and redirect a UE to another frequency)</p>
+<h2 id="&#x73AF;&#x5883;"><a href="#&#x73AF;&#x5883;" class="headerlink" title="&#x73AF;&#x5883;"></a>&#x73AF;&#x5883;</h2><p>&#x4E0D;&#x5F71;&#x54CD;&#x73B0;&#x7F51;&#xFF0C;&#x56E0;&#x6B64;&#x7528;oai&#x548C;openair-cn&#x642D;&#x5EFA;&#x4E00;&#x4E2A;LTE&#x7F51;&#x3002;&#x7528;&#x6B63;&#x5E38;&#x624B;&#x673A;(UE)&#x8FDE;&#x63A5;&#x3002;&#xFF08;USRP B210+&#x7B14;&#x8BB0;&#x672C;&#xFF09;</p>
+<p>&#x9009;&#x7528;&#x7684;&#x662F;&#x901A;&#x8FC7;&#x6838;&#x5FC3;&#x7F51;/MME&#x53D1;&#x9001;&#x7684;attach reject&#x6765;&#x89E6;&#x53D1;&#x57FA;&#x7AD9;&#x7684;RRCConnectionRelease.</p>
+<p>&#x521D;&#x59CB;&#x72B6;&#x6001;&#x7684;&#x6D4B;&#x8BD5;&#xFF0C;attach reject&#x9009;&#x7528;cause 17&#xFF0C;network failure&#xFF0C;&#x6BD4;&#x8F83;&#x201C;&#x5F31;&#x201D;&#x7684;&#x4E00;&#x4E2A;cause&#x3002;</p>
+<p>oai&#x4EE3;&#x7801;&#x4E0D;&#x52A8;&#xFF0C;&#x9ED8;&#x8BA4;RRCConnectionRelease&#x4E2D;&#x662F;&#x4E0D;&#x643A;&#x5E26;redirectedCarrierInfo&#x3002;&#x4FEE;&#x6539;openair-cn&#xFF0C;&#x5F53;&#x63A5;&#x6536;&#x5230;&#x7B2C;&#x4E00;&#x6B21;attach request&#x65F6;&#x5019;&#xFF0C;&#x53D1;&#x9001;attach reject&#xFF0C;cause 17&#xFF1B;&#x800C;&#x7B2C;&#x4E8C;&#x6B21;&#x5C06;&#x6B63;&#x5E38;&#x5904;&#x7406;attach request(&#x5373;accept)&#x3002;</p>
+<p>&#x642D;&#x5EFA;&#x4E00;&#x4E2A;2G&#x73AF;&#x5883;&#xFF0C;&#x4FDD;&#x6301;&#x8FD0;&#x884C;&#x72B6;&#x6001;&#x3002;&#xFF08;&#x4E00;&#x4E2A;Linux&#x865A;&#x62DF;&#x673A;+limesdr mini&#xFF09;</p>
+<p><strong>&#x73B0;&#x8C61;</strong>&#xFF1A;UE&#x5728;&#x7B2C;&#x4E00;&#x6B21;attach reject&#x4E4B;&#x540E;&#xFF0C;&#x7EE7;&#x7EED;&#x5411;LTE&#x7F51;&#x7EDC;&#x53D1;&#x8D77;attach request&#xFF0C;&#x7136;&#x540E;&#x6B63;&#x5E38;&#x8FDE;&#x63A5;LTE&#x7F51;&#x7EDC;&#x3002;</p>
+<h2 id="&#x6DFB;&#x52A0;redirectedCarrierInfo"><a href="#&#x6DFB;&#x52A0;redirectedCarrierInfo" class="headerlink" title="&#x6DFB;&#x52A0;redirectedCarrierInfo"></a>&#x6DFB;&#x52A0;redirectedCarrierInfo</h2><p>oai&#x5728;asn1_msg.c&#x4E2D;&#xFF0C;do_RRCConnectionRelease&#x51FD;&#x6570;&#x4E2D;&#xFF0C;&#x662F;&#x7528;&#x6765;&#x6784;&#x9020;RRCConnectionRelease&#x5305;&#xFF0C;&#x6DFB;&#x52A0;redirectedCarrierInfo&#x7ED3;&#x6784;&#x3002;&#x6BD4;&#x5982;&#x6211;&#x7684;&#x6DFB;&#x52A0;&#xFF1A;</p>
+<p></p><figure class="highlight c hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">LTE_RedirectedCarrierInfo_t rInfo;</span><br><span class="line">  </span><br><span class="line">  <span class="hljs-comment">// geran</span></span><br><span class="line">  rInfo.present = LTE_RedirectedCarrierInfo_PR_geran;</span><br><span class="line">  LTE_CarrierFreqsGERAN_t cfgt;</span><br><span class="line">  cfgt.startingARFCN = <span class="hljs-number">636</span>;</span><br><span class="line">  cfgt.bandIndicator = <span class="hljs-number">0</span>;</span><br><span class="line">  cfgt.followingARFCNs.present = LTE_CarrierFreqsGERAN__followingARFCNs_PR_equallySpacedARFCNs;</span><br><span class="line">  cfgt.followingARFCNs.choice.equallySpacedARFCNs.arfcn_Spacing = <span class="hljs-number">1</span>;</span><br><span class="line">  cfgt.followingARFCNs.choice.equallySpacedARFCNs.numberOfFollowingARFCNs = <span class="hljs-number">0</span>;</span><br><span class="line"></span><br><span class="line">  rInfo.choice.geran = cfgt;</span><br><span class="line"></span><br><span class="line">......</span><br><span class="line">  rrcConnectionRelease-&gt;criticalExtensions.choice.c1.choice.rrcConnectionRelease_r8.redirectedCarrierInfo = &amp;rInfo;</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>arfcn&#x548C;&#x9891;&#x7387;&#x5BF9;&#x5E94;&#x53EF;&#x4EE5;&#x53C2;&#x8003;&#xFF0C;&#x4FDD;&#x6301;&#x548C;&#x4F60;&#x642D;&#x5EFA;&#x7684;&#x4F2A;&#x57FA;&#x7AD9;&#x4E00;&#x81F4;&#x5373;&#x53EF;&#xFF1A;</p>
+<p><a href="https://wenku.baidu.com/view/55e2d6677cd184254a35355b.html" target="_blank" rel="noopener">https://wenku.baidu.com/view/55e2d6677cd184254a35355b.html</a></p>
+<p>&#x73B0;&#x8C61;&#x662F;&#x5728;&#x4E00;&#x6B21;attach reject&#x4E4B;&#x540E;&#x76F4;&#x63A5;&#x8FDE;&#x63A5;&#x5230;&#x4E86;&#x642D;&#x5EFA;&#x7684;2G&#x4F2A;&#x57FA;&#x7AD9;&#x4E0A;&#x3002;</p>
+<h2 id="&#x540E;&#x7EED;"><a href="#&#x540E;&#x7EED;" class="headerlink" title="&#x540E;&#x7EED;"></a>&#x540E;&#x7EED;</h2><p>&#x5F88;&#x65E9;&#x5C31;&#x53D1;&#x73B0;&#x7684;&#x95EE;&#x9898;&#xFF0C;&#x4F46;3GPP&#x534F;&#x8BAE;&#x6587;&#x6863;&#x5374;&#x5F88;&#x665A;&#x624D;&#x4F53;&#x73B0;&#x6DFB;&#x52A0;&#x4FEE;&#x590D;&#x3002;&#x6D4B;&#x8BD5;&#x7528;&#x7684;&#x4E00;&#x6B3E;19&#x5E74;&#x5E95;&#x7684;&#x624B;&#x673A;&#x4E5F;&#x662F;&#x53D7;&#x5F71;&#x54CD;&#x7684;&#x3002;</p>
+<p>&#x5F53;UE&#x6536;&#x5230;RCCConnectionRelease/RRCRelease&#x65F6;&#xFF0C;&#x5904;&#x7406;&#x6D41;&#x7A0B;&#x4E0A;36331&#x548C;38331&#x90FD;&#x6709;&#x76F8;&#x5173;&#x4FEE;&#x6539;&#x3002;&#x6BD4;&#x5982;36331&#x63CF;&#x8FF0;&#x5982;&#x4E0B;&#xFF1A;</p>
+<p></p><figure class="highlight tex hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1&gt;	if the RRCConnectionRelease message includes redirectedCarrierInfo indicating redirection to geran:</span><br><span class="line">    2&gt;	if AS security has not been activated, and </span><br><span class="line">    2&gt;	if upper layers indicate that redirect to GERAN without AS security is not allowed:</span><br><span class="line">        3&gt;	perform the actions upon leaving RRC_CONNECTED as specified in 5.3.12, with release cause &apos;other&apos;, upon which the procedure ends;</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p></p><figure class="highlight tex hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1&gt; if the RRCConnectionRelease message includes redirectedCarrierInfo indicating redirection to geran; or</span><br><span class="line">1&gt; if the RRCConnectionRelease message includes idleModeMobilityControlInfo including freqPriorityListGERAN:</span><br><span class="line">    2&gt; if AS security has not been activated; and</span><br><span class="line">    2&gt; if upper layers indicate that redirect to GERAN without AS security is not allowed:</span><br><span class="line">        3&gt; ignore the content of the RRCConnectionRelease;</span><br><span class="line">        3&gt; perform the actions upon leaving RRC_CONNECTED or RRC_INACTIVE as specified in 5.3.12, with release cause &apos;other&apos;, upon which the procedure ends;</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>&#x63CF;&#x8FF0;&#x4E2D;&#x5728;AS Security&#x4E4B;&#x540E;&#x5FC5;&#x987B;&#x5F97;&#x6709;&#x5B8C;&#x6574;&#x6027;&#x4FDD;&#x62A4;&#xFF1B;&#x5982;&#x679C;&#x5728;AS Security&#x4E4B;&#x524D;&#x7684;&#x8BDD;&#xFF0C;&#x643A;&#x5E26;redirectedCarrierInfo&#x5B57;&#x6BB5;&#x662F;&#x4E0D;&#x4F1A;&#x88AB;&#x5904;&#x7406;&#x7684;&#x3002;&#x5176;&#x5B9E;&#x4E5F;&#x8FD8;&#x6709;&#x8FD9;&#x4E48;&#x4E00;&#x4E2A;&#x6761;&#x4EF6;<strong>if upper layers indicate that redirect to GERAN</strong> &#x6240;&#x4EE5;&#x548C;&#x57FA;&#x5E26;&#x7684;&#x5B9E;&#x73B0;&#x4E5F;&#x6709;&#x5F88;&#x5927;&#x5173;&#x7CFB;&#x3002;</p>
+<p>&#x800C;&#x5728;38331&#x4E2D;&#xFF0C;&#x5230;&#x4E86;release 15.6.0&#xFF08;19&#x5E74;6&#x6708;&#xFF09;&#x624D;&#x989D;&#x5916;&#x6DFB;&#x52A0;&#x4E00;&#x53E5;ignore&#xFF1A;</p>
+<p></p><figure class="highlight tex hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1&gt; if the AS security is not activated:</span><br><span class="line">    2&gt; ignore any field included in RRCRelease message except waitTime;</span><br><span class="line">    2&gt; perform the actions upon going to RRC_IDLE as specified in 5.3.11 with the release cause &apos;other&apos; upon which the procedure ends;</span><br></pre></td></tr></tbody></table></figure><p></p>
+<h2 id="&#x76F8;&#x5173;&#x6587;&#x6863;&#x53C2;&#x8003;"><a href="#&#x76F8;&#x5173;&#x6587;&#x6863;&#x53C2;&#x8003;" class="headerlink" title="&#x76F8;&#x5173;&#x6587;&#x6863;&#x53C2;&#x8003;"></a>&#x76F8;&#x5173;&#x6587;&#x6863;&#x53C2;&#x8003;</h2><p>Forcing a Targeted LTE Cellphone into an Eavesdropping Network</p>
+<p>seeker: &#x4F2A;&#x57FA;&#x7AD9;&#x9AD8;&#x7EA7;&#x5229;&#x7528;&#x6280;&#x672F;&#x2014;&#x2014;&#x5F7B;&#x5E95;&#x653B;&#x7834;&#x77ED;&#x4FE1;&#x9A8C;&#x8BC1;&#x7801;<br>[1] LTE RRC: TS 36331<br>[2] 5G RRC: TS 38331</p>
+</body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/5G/">#5G</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/2020/09/23/small-problems/">5G安全-发现的几个小问题</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/2018/04/07/CVE-2017-5465/">CVE-2017-5465 Firefox ConvolvePixel 函数内越界读</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2020 icepng&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/" target="_blank" rel="noopener">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("en-AU");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>5G安全-发现的几个小问题 - icepng&#39;s  blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="&amp;#x5728;&amp;#x770B;&amp;#x534F;&amp;#x8BAE;&amp;#x7684;&amp;#x65F6;&amp;#x5019;&amp;#x53D1;&amp;#x73B0;&amp;#x4E86;&amp;#x51E0;&amp;#x4E2A;&amp;#x5C0F;&amp;#x95EE;&amp;#x9898;,&amp;#x5176;&amp;#x5B9E;&amp;#x5F53;&amp;#x65F6;&amp;#x4E5F;&amp;#x6CA1;&amp;#x89C9;&amp;#x5F97;&amp;#x662F;&amp;#x4EC0">
+<meta property="og:type" content="article">
+<meta property="og:title" content="5G安全-发现的几个小问题">
+<meta property="og:url" content="https://icepng.github.io/2020/09/23/small-problems/index.html">
+<meta property="og:site_name" content="icepng&#39;s  blog">
+<meta property="og:description" content="&amp;#x5728;&amp;#x770B;&amp;#x534F;&amp;#x8BAE;&amp;#x7684;&amp;#x65F6;&amp;#x5019;&amp;#x53D1;&amp;#x73B0;&amp;#x4E86;&amp;#x51E0;&amp;#x4E2A;&amp;#x5C0F;&amp;#x95EE;&amp;#x9898;,&amp;#x5176;&amp;#x5B9E;&amp;#x5F53;&amp;#x65F6;&amp;#x4E5F;&amp;#x6CA1;&amp;#x89C9;&amp;#x5F97;&amp;#x662F;&amp;#x4EC0">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://icepng.github.io/images/small-problems.assets/image-20200924222031320.png">
+<meta property="og:image" content="https://icepng.github.io/images/small-problems.assets/image-20200923153129941.png">
+<meta property="og:image" content="https://icepng.github.io/images/small-problems.assets/image-20200923153345269.png">
+<meta property="article:published_time" content="2020-09-23T14:14:52.000Z">
+<meta property="article:modified_time" content="2020-09-24T14:57:44.629Z">
+<meta property="article:author" content="icepng">
+<meta property="article:tag" content="5G">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://icepng.github.io/images/small-problems.assets/image-20200924222031320.png">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow-night-bright.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <p> ICEPNG </p>
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/categories">Categories</a>
+            
+            <a class="navbar-item "
+               href="/categories/vuls">Vuls</a>
+            
+            <a class="navbar-item "
+               href="/categories/5G">5G</a>
+            
+            <a class="navbar-item "
+               href="/categories/iots">iots</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="Search" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="Table of Contents">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#EN-DC-UE-Capbility-Information问题">1&nbsp;&nbsp;<b>EN-DC UE Capbility Information问题</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#paging耗电">2&nbsp;&nbsp;<b>paging耗电</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#其他">3&nbsp;&nbsp;<b>其他</b></a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/icepng" target="_blank" rel="noopener">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            5G安全-发现的几个小问题
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-09-23T14:14:52.000Z" itemprop="datePublished">Sep 23 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/5G/">5G</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            4 minutes read (About 550 words)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>&#x5728;&#x770B;&#x534F;&#x8BAE;&#x7684;&#x65F6;&#x5019;&#x53D1;&#x73B0;&#x4E86;&#x51E0;&#x4E2A;&#x5C0F;&#x95EE;&#x9898;,&#x5176;&#x5B9E;&#x5F53;&#x65F6;&#x4E5F;&#x6CA1;&#x89C9;&#x5F97;&#x662F;&#x4EC0;&#x4E48;&#x95EE;&#x9898;,&#x6709;&#x4E2A;&#x95EE;&#x9898;&#x662F;&#x5728;1&#x6708;&#x4EFD;&#x7684;&#x5DE6;&#x53F3;&#x53D1;&#x73B0;,&#x4E5F;&#x6CA1;&#x548B;&#x5173;&#x6CE8;&#x4E86;,&#x5230;&#x4E86;6,7&#x6708;&#x6574;&#x7406;&#x5185;&#x5BB9;&#x7684;&#x65F6;&#x5019;&#x60F3;&#x7740;&#x6574;&#x7406;&#x4E00;&#x4E0B;&#x4FE1;&#x606F;&#x7ED9;3GPP&#x62A5;&#x4E00;&#x4E0B;,&#x53D1;&#x73B0;&#x7ED9;&#x6700;&#x65B0;&#x7684;&#x6587;&#x6863;&#x7ADF;&#x7136;&#x7ED9;&#x4FEE;&#x4E86;. &#x611F;&#x89C9;&#x633A;&#x8BE7;&#x5F02;&#x7684;&#x2026;&#x2026;&#x5206;&#x4EAB;&#x4E00;&#x4E0B;,&#x5371;&#x5BB3;&#x4E0D;&#x5927;,&#x653B;&#x51FB;&#x6210;&#x672C;&#x592A;&#x9AD8;.</p>
+<h2 id="EN-DC-UE-Capbility-Information&#x95EE;&#x9898;"><a href="#EN-DC-UE-Capbility-Information&#x95EE;&#x9898;" class="headerlink" title="EN-DC UE Capbility Information&#x95EE;&#x9898;"></a>EN-DC UE Capbility Information&#x95EE;&#x9898;</h2><p>&#x8FD9;&#x4E2A;&#x662F;&#x5728;&#x770B;EN-DC&#xFF0C;&#x975E;&#x72EC;&#x7ACB;&#x7EC4;&#x7F51;&#x7684;&#x6CE8;&#x518C;&#x6D41;&#x7A0B;&#x53D1;&#x73B0;&#xFF0E;&#x8BE6;&#x7EC6;&#x53EF;&#x4EE5;&#x53C2;&#x8003;&#xFF1A;</p>
+<p><a href="https://www.eventhelix.com/5G/non-standalone-access-en-dc/en-dc-secondary-node-addition.pdf" target="_blank" rel="noopener">https://www.eventhelix.com/5G/non-standalone-access-en-dc/en-dc-secondary-node-addition.pdf</a></p>
+<p>&#x5176;&#x4E2D;&#x6709;&#x4E00;&#x4E2A;&#x6D41;&#x7A0B;&#x662F;&#x57FA;&#x7AD9;&#x7ED9;UE&#x53D1;&#x9001;UE Capability Enquiry&#x6765;&#x67E5;&#x8BE2;UE&#x6240;&#x80FD;&#x652F;&#x6301;&#x7684;&#x7F51;&#x7EDC;&#x7C7B;&#x578B;&#x80FD;&#x529B;,&#x5728;TS 36331&#x4E2D;&#x6709;&#x63CF;&#x8FF0;:</p>
+<img src="/images/small-problems.assets/image-20200924222031320.png" alt="image-20200924222031320" style="zoom:80%;">
+
+<p>UE&#x6536;&#x5230;&#x540E;&#x4F1A;&#x628A;&#x81EA;&#x5DF1;&#x652F;&#x6301;&#x7684;&#x7F51;&#x7EDC;&#x80FD;&#x529B;&#x53D1;&#x7ED9;&#x57FA;&#x7AD9;,&#x4E3A;&#x4E86;&#x540E;&#x9762;&#x6B63;&#x5E38;&#x4E0A;&#x7F51;&#x6D41;&#x7A0B;.</p>
+<p>&#x56E0;&#x4E3A;&#x8BE5;&#x8FC7;&#x7A0B;&#x662F;&#x6BD4;&#x8F83;&#x91CD;&#x8981;&#x7684;, &#x6BD4;&#x5982;&#x6211;&#x4EEC;&#x80FD;&#x591F;&#x4E2D;&#x95F4;&#x4EBA;&#x4FEE;&#x6539;UECapabilityInformation&#x8BA9;&#x57FA;&#x7AD9;&#x8BA4;&#x4E3A;UE&#x53EA;&#x652F;&#x6301;GSM&#x7684;&#x8BDD;,&#x90A3;&#x4E48;UE&#x5C31;&#x6CA1;&#x6CD5;&#x6B63;&#x5E38;&#x7528;LTE/5G,&#x90A3;&#x4E48;&#x5C31;&#x80FD;&#x591F;&#x5B9E;&#x73B0;&#x964D;&#x7EA7;.</p>
+<p>&#x6211;&#x5728;&#x770B;&#x6D41;&#x7A0B;&#x7684;&#x65F6;&#x5019;,&#x53D1;&#x73B0;&#x8BE5;&#x8FC7;&#x7A0B;&#x7ADF;&#x7136;&#x5728;AS Security&#x4E4B;&#x524D;. &#x8FD9;&#x4E2A;&#x65F6;&#x5019;&#x6211;&#x4EEC;&#x53EA;&#x8981;&#x4E2D;&#x95F4;&#x4EBA;,&#x5C31;&#x53EF;&#x4EE5;&#x968F;&#x4FBF;&#x4FEE;&#x6539;&#x4E86;.</p>
+<p>&#x4F46;&#x5176;&#x5B9E;&#x534F;&#x8BAE;&#x6587;&#x6863;&#x4E2D;&#x5176;&#x5B9E;&#x4E5F;&#x6CA1;&#x5F88;&#x660E;&#x786E;&#x6307;&#x51FA;&#x6765;, TS 36331 f80, 5.6.3&#x4E2D;&#x7684;&#x63CF;&#x8FF0;&#x4E2D;,&#x5176;&#x5B9E;&#x5C31;&#x6CA1;&#x6709;&#x8003;&#x8651;UECapabilityInformation&#x7684;&#x53D1;&#x9001;&#x524D;&#x63D0;&#x9650;&#x5236;&#xFF0E;&#x76F8;&#x5F53;&#x7B80;&#x5355;&#x7684;&#x4E00;&#x53E5;&#x8BDD;&#xFF1A;</p>
+<p><img src="/images/small-problems.assets/image-20200923153129941.png" alt="image-20200923153129941"></p>
+<p>&#x6211;&#x4E00;&#x76F4;&#x7531;&#x6700;&#x65B0;&#x5F80;&#x524D;&#x627E;&#xFF0C;&#x53D1;&#x73B0;&#x5C31;&#x662F;&#x5728;TS 36331 f90 (2020/3/31)&#x4E2D;&#x6DFB;&#x52A0;&#x4E86;&#x76F8;&#x5173;&#x4FEE;&#x590D;&#x2026;&#x2026;</p>
+<p><img src="/images/small-problems.assets/image-20200923153345269.png" alt="image-20200923153345269"></p>
+<p>&#x660E;&#x786E;&#x5F3A;&#x8C03;&#x4E86;&#x5FC5;&#x987B;&#x5728;AS Security&#x4E4B;&#x540E;&#x624D;&#x8BA4;UE&#x53D1;&#x9001;&#x8FC7;&#x6765;&#x7684;UECapabilityInformation. </p>
+<h2 id="paging&#x8017;&#x7535;"><a href="#paging&#x8017;&#x7535;" class="headerlink" title="paging&#x8017;&#x7535;"></a>paging&#x8017;&#x7535;</h2><p>&#x5176;&#x5B9E;&#x7B97;&#x662F;&#x4E00;&#x4E2A;&#x6BD4;&#x8F83;&#x6C34;&#x7684;&#x95EE;&#x9898;,&#x5176;&#x5B9E;&#x6211;&#x4EEC;&#x642D;&#x5EFA;&#x4E00;&#x5957;&#x4F2A;&#x57FA;&#x7AD9;&#x7684;&#x73AF;&#x5883;,&#x5C31;&#x80FD;&#x591F;&#x53D1;&#x9001;Paging. &#x4E3B;&#x8981;&#x662F;&#x628A;&#x76EE;&#x6807;&#x653E;&#x5728;5G&#x573A;&#x666F;&#x4E0B;&#x7684;IoT&#x8BBE;&#x5907;&#x4E0A;&#x5C31;&#x6709;&#x70B9;&#x610F;&#x601D;&#x4E86;&#xFF0C;&#x56E0;&#x4E3A;&#x4E3A;&#x4E86;&#x8282;&#x7701;&#x7528;&#x7535;&#xFF0C;&#x4E00;&#x4E9B;IoT&#x8BBE;&#x5907;&#x90FD;&#x662F;IDLE&#x7684;&#x72B6;&#x6001;&#xFF0C;&#x8981;&#x662F;&#x80FD;&#x591F;paging&#x5524;&#x9192;&#x7684;&#x8BDD;&#xFF0C;&#x5C31;&#x80FD;&#x591F;&#x6D88;&#x8017;&#x7535;&#x91CF;&#xFF0E;</p>
+<p>&#x4F46;&#x5176;&#x5B9E;&#x50CF;&#x4E00;&#x4E9B;&#x573A;&#x666F;&#x4E0B;&#xFF0C;&#x90A3;&#x4E9B;IoT&#x8BBE;&#x5907;&#x4E5F;&#x5C31;&#x5B9A;&#x671F;&#x68C0;&#x67E5;&#x4E00;&#x4E9B;&#x6D88;&#x606F;&#x2026;&#x2026;</p>
+<h2 id="&#x5176;&#x4ED6;"><a href="#&#x5176;&#x4ED6;" class="headerlink" title="&#x5176;&#x4ED6;"></a>&#x5176;&#x4ED6;</h2><p>&#x2026;&#x2026;</p>
+</body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/5G/">#5G</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/2020/09/24/5gallinone/">5gallinone</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/2020/09/23/RRCConnectionRelease/">LTE RRCConnectionRelease Redirect问题分析</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2020 icepng&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/" target="_blank" rel="noopener">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("en-AU");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>
